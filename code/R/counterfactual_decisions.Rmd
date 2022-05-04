@@ -1,0 +1,552 @@
+---
+title: "That was close! A counterfactual simulation model of causal judgments about decisions"
+author: "Sarah A. Wu, Shruti Sridhar, and Tobias Gerstenberg"
+date: "`r format(Sys.Date(), '%B %d, %Y')`"
+output:
+  bookdown::html_document2:
+    toc: true
+    toc_depth: 3
+    toc_float: true
+    theme: cosmo
+    highlight: tango
+---
+
+# Setup
+
+```{r setup, include = F, message = F, warning = F}
+# load relevant libraries and functions
+require(knitr)         # for knitting        
+library(ggstatsplot)   # extension of ggplot2
+library(lme4)          # for mixed effects models
+library(lmerTest)      # for p-values
+library(DT)            # for datatable() function 
+library(Metrics)       # for RMSE
+library(Hmisc)         # for bootstrapped confidence intervals
+library(ggrepel)       # avoid overlap in geom_text
+library(patchwork)     # for multiple plots
+library(tidyverse)     # for everything else
+
+knitr::opts_chunk$set(echo = T, warning = F, message = F)
+
+# set default plot theme 
+theme_set(theme_classic() + 
+            theme(text = element_text(size = 14))) 
+
+# suppress warnings about grouping 
+options(dplyr.summarise.inform = F)
+
+options(xtable.floating = F)
+options(xtable.timestamp = "")
+
+data_dir = '../../data/'
+figures_dir = '../../figures/'
+trial_info_dir = '../experiment/'
+```
+
+# Data
+
+## Trial info
+
+```{r importing_trial_info}
+trial_info = read_csv(paste0(trial_info_dir, 'experiment.csv'),
+                      show_col_types = F) %>%
+  mutate(bar_color = ifelse(cf_success_rate >= 50, 1, 0),
+         pred_cf = ifelse(outcome == 'won', 100 - cf_success_rate, cf_success_rate),
+         pred_hyp = ifelse(outcome == 'won', 100 - hyp_success_rate, hyp_success_rate),
+         diff_made = c(F, F, T, T, T, T,
+                       F, T, T, F, T, F,
+                       T, T, F, F, F, F))
+```
+
+## Counterfactual condition
+
+### Importing
+
+```{r importing_cf}
+data_cf_raw = read_csv(paste0(data_dir, 'experiment1_cf/trials.csv'),
+                       show_col_types = F) %>%
+  rename(id = workerid)
+
+data_cf_participants_raw = read_csv(paste0(data_dir, 'experiment1_cf/participants.csv'),
+                                    show_col_types = F) %>%
+  rename(id = workerid)
+```
+
+### Processing
+
+```{r processing_cf}
+data_cf = data_cf_raw %>%
+  drop_na(trial) %>%
+  left_join(trial_info %>%
+              select(trial, outcome),
+            by = c('trial')) %>%
+  mutate(cf_recode = ifelse(outcome == 'won', 100 - cf, cf),
+         id = factor(id))
+
+data_cf_means = data_cf %>%
+  group_by(trial) %>%
+  summarise(cf_mean = mean(cf),
+            cf_low = smean.cl.boot(cf)[2],
+            cf_high = smean.cl.boot(cf)[3],
+            cf_recode_mean = mean(cf_recode),
+            cf_recode_low = smean.cl.boot(cf_recode)[2],
+            cf_recode_high = smean.cl.boot(cf_recode)[3])
+
+data_cf_participants = data_cf_participants_raw %>%
+  mutate(id = factor(id))
+```
+
+
+Number of participants:
+```{r n_participants_cf}
+length(unique(data_cf$id))
+```
+
+### Feedback
+
+Participants were asked: "What factors influenced how you decided to respond? Do you have any questions or comments regarding the experiment?"
+
+```{r feedback_cf}
+data_cf_participants %>%
+  select(feedback) %>% 
+  datatable()
+```
+
+
+## Hypothetical condition
+
+### Importing
+
+```{r importing_hyp}
+data_hyp_raw = read_csv(paste0(data_dir, 'experiment1_hyp/trials.csv'),
+                       show_col_types = F) %>%
+  rename(id = workerid)
+
+data_hyp_participants_raw = read_csv(paste0(data_dir, 'experiment1_hyp/participants.csv'),
+                                    show_col_types = F) %>%
+  rename(id = workerid)
+```
+
+### Processing
+
+```{r processing_hyp}
+data_hyp = data_hyp_raw %>%
+  drop_na(trial) %>%
+  left_join(trial_info %>%
+              select(trial, outcome),
+            by = c('trial')) %>%
+  mutate(hyp_recode = ifelse(outcome == 'won', 100 - hyp, hyp),
+         id = factor(id))
+
+data_hyp_means = data_hyp %>%
+  group_by(trial) %>%
+  summarise(hyp_mean = mean(hyp),
+            hyp_low = smean.cl.boot(hyp)[2],
+            hyp_high = smean.cl.boot(hyp)[3],
+            hyp_recode_mean = mean(hyp_recode),
+            hyp_recode_low = smean.cl.boot(hyp_recode)[2],
+            hyp_recode_high = smean.cl.boot(hyp_recode)[3])
+
+data_hyp_participants = data_hyp_participants_raw %>%
+  mutate(id = factor(id))
+```
+
+
+Number of participants:
+```{r n_participants_hyp}
+length(unique(data_hyp$id))
+```
+
+### Feedback
+
+Participants were asked: "What factors influenced how you decided to respond? Do you have any questions or comments regarding the experiment?"
+
+```{r feedback_hyp}
+data_hyp_participants %>%
+  select(feedback) %>% 
+  datatable()
+```
+
+
+## Causal condition
+
+### Importing
+
+```{r importing_cause}
+data_raw = read_csv(paste0(data_dir, 'experiment2/trials.csv'),
+                    show_col_types = F) %>%
+  rename(id = workerid)
+
+data_participants_raw = read_csv(paste0(data_dir, 'experiment2/participants.csv'),
+                                 show_col_types = F) %>%
+  rename(id = workerid)
+```
+
+### Processing
+
+```{r processing_cause}
+data = data_raw %>%
+  drop_na(trial) %>%
+  left_join(trial_info, by = c('trial')) %>%
+  mutate(id = factor(id))
+
+data_participants = data_participants_raw %>%
+  mutate(id = factor(id))
+```
+
+
+Number of participants:
+```{r n_participants_cause}
+length(unique(data$id))
+```
+
+### Feedback
+
+Participants were asked: "What factors influenced how you decided to respond? Do you have any questions or comments regarding the experiment?"
+
+```{r feedback_cause}
+data_participants %>%
+  select(feedback) %>% 
+  datatable()
+```
+
+
+
+
+# Demographics
+
+## Helper function
+```{r demographics_helper}
+print_demographics = function(data) {
+  # gender
+  data %>%
+    group_by(gender) %>%
+    summarise(n = n()) %>%
+    print()
+  
+  # age
+  print('age:')
+  mean(data$age, na.rm = T) %>% print()
+  sd(data$age, na.rm = T) %>% print()
+  
+  # race
+  data %>%
+    group_by(race) %>%
+    summarise(n = n()) %>%
+    print()
+  
+  # ethnicity
+  data %>%
+    group_by(ethnicity) %>%
+    summarise(n = n()) %>%
+    print()
+
+  # time taken
+  print('time taken (min):')
+  print(mean(data$time, na.rm = T)/60/1000)
+  print(sd(data$time, na.rm = T)/60/1000)
+}
+```
+
+
+## Experiment 1
+
+```{r demographics_exp1}
+print_demographics(data_cf_participants %>%
+                     rbind(data_hyp_participants))
+```
+
+## Experiment 2
+
+```{r demographics_exp2}
+print_demographics(data_participants)
+```
+
+
+# Stats and modeling
+
+## Importing features
+
+```{r importing_features}
+features = read_csv(sprintf('%s/features.csv', trial_info_dir),
+                    show_col_types = F) %>%
+  left_join(trial_info %>%
+              select(trial, outcome),
+            by = 'trial') %>%
+  mutate(doors_final = factor(doors_final,
+                              levels = c('open_open', 'open_closed',
+                                         'closed_open', 'closed_closed',
+                                         'none_none')))
+
+data_modeling = data %>%
+  select(id, trial, cause) %>%
+  left_join(data_cf_means %>%
+              select(trial, cf_recode_mean),
+            by = 'trial') %>%
+  left_join(data_hyp_means %>%
+              select(trial, hyp_recode_mean),
+            by = 'trial') %>%
+  left_join(features,
+            by = 'trial')
+```
+
+## Fitting all trials
+
+```{r fit_heuristic}
+fit.heuristic = lmer(
+  formula = cause ~ 1 + outcome:doors_final + (1 | id),
+  data = data_modeling
+)
+
+summary(fit.heuristic)
+```
+Fit matrix is rank-deficient because not all factor levels have data for both outcomes (e.g. there is no trial that was a loss and had no doors). So we fit win and loss trials separately, using the same formula.
+
+
+## Fitting wins only
+
+```{r fit_heuristic_win}
+fit.heuristic_win = lmer(
+  formula = cause ~ 1 + doors_final + (1 | id),
+  data = data_modeling %>%
+    filter(outcome == 'won')
+)
+
+summary(fit.heuristic_win)
+```
+
+## Fitting losses only
+
+```{r fit_heuristic_loss}
+fit.heuristic_loss = lmer(
+  formula = cause ~ 1 + doors_final + (1 | id),
+  data = data_modeling %>%
+    filter(outcome == 'lost')
+)
+
+summary(fit.heuristic_loss)
+```
+
+
+# Plots
+
+## Experiment 1
+
+### Set up data
+```{r exp1_plot_data}
+data_cf_pred = data_cf_means %>%
+  rename(emp_mean = cf_mean,
+         emp_low = cf_low,
+         emp_high = cf_high) %>%
+  left_join(trial_info %>%
+          select(trial,
+                 pred = cf_success_rate,
+                 pred_recode = pred_cf,
+                 diff_made),
+        by = 'trial')
+
+data_hyp_pred = data_hyp_means %>%
+  rename(emp_mean = hyp_mean,
+         emp_low = hyp_low,
+         emp_high = hyp_high) %>%
+  left_join(trial_info %>%
+          select(trial,
+                 pred = hyp_success_rate,
+                 pred_recode = pred_hyp,
+                 diff_made),
+        by = 'trial')
+```
+
+
+### Helper function
+```{r exp1_plot_helper}
+limits = c(0, 100)
+color_scale = c("FALSE" = "red3", "TRUE" = "chartreuse3")
+
+plot_simulation = function(data, name) {
+  r = cor(data$emp_mean, data$pred) %>%
+    round(2)
+  rmse = rmse(data$emp_mean, data$pred)
+  
+  g = ggplot(data = data,
+             aes(x = pred,
+                 y = emp_mean)) +
+    geom_abline(intercept = 0, slope = 1,
+                linetype = 2, size = 0.2) +
+    # error bars
+    geom_linerange(size = 0.5, 
+                   mapping = aes(ymin = emp_low,
+                                 ymax = emp_high),
+                   color = 'gray') +
+    # means
+    geom_point(mapping = aes(fill = 'darkgray'),
+               shape = 21, size = 3, stroke = 0.2) +
+    # trial labels
+    geom_text_repel(aes(label = trial),
+                    size = 4,
+                    seed = 1,
+                    max.overlaps = 18) +
+    theme(legend.position = "none",
+          text = element_text(size = 12),
+          axis.text = element_text(size = 12)) +
+    annotate('text', color = 'red3',
+             label = sprintf('r = %s\nRMSE = %.2f', r, rmse),
+             hjust = 0,   # left align
+             x = limits[1], y = limits[2] - 25) +
+    scale_x_continuous(name = paste(name, 'simulation'),
+                       limits = limits) +
+    scale_y_continuous(name = paste(name, 'judgment'),
+                       limits = limits) +
+    scale_color_manual(values = color_scale,
+                      guide = 'none') +
+    scale_fill_manual(values = color_scale,
+                      guide = 'none')
+
+  return(g)
+}
+```
+
+### Scatterplots
+
+```{r exp1_plot, fig.width = 6, fig.height = 3}
+p_cf = plot_simulation(data_cf_pred, 'counterfactual')
+p_hyp = plot_simulation(data_hyp_pred, 'hypothetical')
+
+p_hyp + p_cf + plot_annotation(tag_levels = 'A')
+
+#ggsave(paste0(figures_dir, 'experiment1.pdf'), width = 6, height = 3)
+```
+
+
+## Experiment 2
+
+### Set up data
+```{r exp2_plot_data}
+data_pred = data %>%
+  group_by(trial) %>%
+  summarise(cause_mean = mean(cause),
+            cause_low = smean.cl.boot(cause)[2],
+            cause_high = smean.cl.boot(cause)[3]) %>%
+  ungroup() %>%
+  # counterfactual judgments
+  left_join(data_cf_means %>%
+              select(trial,
+                     pred_cf_mean = cf_recode_mean,
+                     pred_cf_low = cf_recode_low,
+                     pred_cf_high = cf_recode_high),
+            by = 'trial') %>%
+  # hypothetical judgments
+  left_join(data_hyp_means %>%
+              select(trial,
+                     pred_hyp_mean = hyp_recode_mean,
+                     pred_hyp_low = hyp_recode_low,
+                     pred_hyp_high = hyp_recode_high),
+            by = 'trial') %>%
+  # heuristic model
+  left_join(features %>%
+              select(trial, outcome),
+            by = 'trial') %>%
+  left_join(data_modeling %>%
+              filter(outcome == 'won') %>%
+              mutate(x = predict(object = fit.heuristic_win,
+                                 newdata = data_modeling %>%
+                                   filter(outcome == 'won'),
+                                 re.form = NA)) %>%
+              rbind(data_modeling %>%
+                      filter(outcome == 'lost') %>%
+                      mutate(x = predict(object = fit.heuristic_loss,
+                                         newdata = data_modeling %>%
+                                           filter(outcome == 'lost'),
+                                         re.form = NA))) %>%
+              group_by(trial) %>%
+              summarise(pred_heuristic_mean = mean(x)),
+            by = 'trial') %>%
+  mutate(# since the plot function will draw error bars
+         pred_heuristic_low = pred_heuristic_mean,
+         pred_heuristic_high = pred_heuristic_mean) %>%
+  merge(trial_info %>%
+          select(trial, diff_made),
+        by = c('trial'))
+```
+
+
+### Helper function
+```{r exp2_plot_helper}
+limits = c(0, 100)
+color_scale = c("FALSE" = "red3", "TRUE" = "chartreuse3")
+
+plot_cause_vs = function(model_name) {
+  col_mean = paste('pred', model_name, 'mean', sep = '_')
+  col_low = paste('pred', model_name, 'low', sep = '_')
+  col_high = paste('pred', model_name, 'high', sep = '_')
+  
+  r = cor(data_pred$cause_mean, data_pred[[col_mean]]) %>%
+    round(2)
+  rmse = rmse(data_pred$cause_mean, data_pred[[col_mean]])
+
+  g = ggplot(data = data_pred,
+             aes(x = get(col_mean),
+                 y = cause_mean)) +
+    geom_abline(intercept = 0, slope = 1,
+                linetype = 2, size = 0.2) +
+    # error bars
+    geom_linerange(size = 0.5,
+                   mapping = aes(ymin = cause_low,
+                                 ymax = cause_high),
+                   color = 'gray') +
+    geom_errorbarh(mapping = aes(xmin = get(col_low),
+                               xmax = get(col_high)),
+                   color = 'lightgray',
+                   height = 0) +
+    # means
+    geom_point(mapping = aes(fill = diff_made),
+               shape = 21, size = 3, stroke = 0.2) +
+    # trial labels
+    geom_text_repel(aes(label = trial,
+                        color = diff_made),
+                    size = 4,
+                    seed = 1,
+                    max.overlaps = 18) +
+    theme(legend.position = "none",
+          text = element_text(size = 12),
+          axis.text = element_text(size = 12)) +
+    annotate('text',
+             label = sprintf('r = %s\nRMSE = %.2f', r, rmse),
+             hjust = 0,
+             x = limits[1], y = limits[2] - 2) +
+    scale_x_continuous(name = case_when(
+      model_name == 'cf' ~ 'counterfactual contrast judgment',
+      model_name == 'hyp' ~ 'hypothetical contrast judgment',
+      model_name == 'heuristic' ~ 'heuristic model'
+    ),
+                       limits = limits) +
+    scale_y_continuous(name = 'causal judgment',
+                       limits = limits) +
+    scale_color_manual(values = color_scale,
+                       guide = 'none') +
+    scale_fill_manual(values = color_scale,
+                      guide = 'none')
+  
+  return(g)
+}
+```
+
+### Scatterplots
+
+```{r exp2_plot, fig.width=10, fig.height=3.5}
+p_cause_vs_cf = plot_cause_vs('cf')
+p_cause_vs_hyp = plot_cause_vs('hyp')
+p_cause_vs_heuristic = plot_cause_vs('heuristic')
+
+p_cause_vs_hyp + p_cause_vs_cf + p_cause_vs_heuristic +
+  plot_annotation(tag_levels = 'A')
+
+#ggsave(paste0(figures_dir, 'experiment2.pdf'), width = 10, height = 3.5)
+```
+
+# Session info
+
+```{r}
+sessionInfo()
+```
+

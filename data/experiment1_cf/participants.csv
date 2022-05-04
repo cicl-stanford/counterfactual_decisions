@@ -1,0 +1,52 @@
+workerid,age,ethnicity,feedback,gender,race,time
+928,58,Non-Hispanic,"I factored in the doors, if they were open or closed.  Also, if they were closed how long it took for them to open.  If the door opened on one side on time I guessed it would open on the other-but not always.",Female,White,566916
+900,30,Non-Hispanic,when the doors opened and if they had enough moves to the star.,Female,native,499375
+931,20,Non-Hispanic,,Female,Multiracial,609562
+913,30,Non-Hispanic,I based it on how far the player could get after a door opened.,Male,White,395268
+905,57,Non-Hispanic,I watched when the other door opened. I reasoned whether it would have make it in time. I guessed if they would have made it,Female,White,527360
+904,41,Non-Hispanic,"I looked at how many ""timesteps"" remained when the door was shut for the other path and where the count time was when the door opened. If the count was less than the remaining timesteps (or blocks) to progress to reach the star, then I answered there was no chance for the other path to win. Same in reverse if the count was more than the remaining timesteps (blocks) then the other path was winnable. ",Female,Asian,854709
+894,26,Non-Hispanic,"I was mostly just mirroring the movement, and if there was an instance where it was undetermined because the player won early it made me not 100% sure in my decision.",Male,White,1962035
+924,33,Non-Hispanic,It was primarily based on which door was open / opened first by the time character got there.,Male,White,533881
+926,47,Non-Hispanic,When the gates opened.,Female,White,1505487
+919,21,Non-Hispanic,"likelihood of a gate opening or not 
+distance",Male,Asian,239785
+938,55,Non-Hispanic,"The number of squares left to get to the star influenced my decision. I calculated 1 second for each square. This was kind of fun, thank you.",Female,black and white,1205401
+907,27,Non-Hispanic,"I was influenced by how long the doors were shut and open, and how many moves were left",Female,White,574778
+899,42,Non-Hispanic,"Using the step counter, I was able to decide my response.",Female,White,662977
+935,57,Non-Hispanic,I watched the result of the chosen path and time remaining then observed the difference in the door opening for the other path.,Female,White,1112603
+912,30,Non-Hispanic,I tried to watch the replays and think about when the doors opened,Male,White,357670
+890,29,Non-Hispanic,"No questions, replaying the play each round helped determine my response. ",Male,Asian,504641
+897,49,Non-Hispanic,I just projected what would have happened in the other scenario,Male,White,490629
+929,65,Non-Hispanic,I noticed a pattern. No questions on the experiment. ,Female,White,1997436
+923,35,Non-Hispanic,"Reviewing the tape and doing the math of one more per 1 second on the clock to calculate whether they'd make it or not. Only one of the decisions involved a future prediction where the door could have opened after the demonstration ended and the player won, I put 33% chance to win for that one as a guess.",Male,White,508346
+892,21,Non-Hispanic,"Watching when the doors opened and closed on both red and blue paths, and seeing how it would have influenced the win/loss, as compared to what was actually chosen and what actually happened.",Female,Asian,495572
+902,25,Non-Hispanic,"no comments, thank you for the opportunity",Male,American Indian/Alaska Native,331124
+898,26,Non-Hispanic,How many turns were left and when the opposite gate opened/closed,Female,Black/African American,608329
+893,25,Hispanic,too long,Female,Black/African American,1878571
+896,31,Hispanic,No,Male,White,368972
+889,23,Non-Hispanic,The Number of clicks left and the door open/close,Female,White,320001
+937,49,Non-Hispanic,I compared when the door opened to how many moves were remaining. If the door never opened i had to judge if there were enough turns left for it to matter if it did open.,Male,White,2131863
+936,22,Non-Hispanic,"I just watched the play-through and envisioned the circle following the opposite path as it took. I watched when the doors opened/closed on that path and counted if the doors would have prevented the circle from reaching the star in time. If they would have, I answered that the circle wouldn't have one if it took the other path. If the doors wouldn't have prevented it, I answered that the circle would have won on the other path. ",Female,White,615626
+939,21,Non-Hispanic,"the time limit, and the order of doors opening and closing",Female,White,344501
+914,42,Non-Hispanic,,Male,Multiracial,335911
+909,20,Hispanic,Factors that influenced the response were seeing how long one path took to open doors than the other. ,Female,American Indian/Alaska Native,559072
+920,24,Hispanic,"Usually there were enough turns left to decide definitively, but there was one where there were enough turns left but the door was closed (actually maybe not)",Female,Multiracial,371056
+933,41,Non-Hispanic,"Whether it was physically possible to reach the goal and win using the other path, given what I saw of the door activity. How much more possible (or not) it was using the other path.",Female,Asian,754162
+932,25,Non-Hispanic,Predicting when the outcome when the other path was chosen,Male,Asian,2440925
+908,53,Non-Hispanic,Facts determined how I responded. This was not a subjective situation. Solid numbers work here only.,Non-binary,White,771303
+906,22,Non-Hispanic,I counted the spots based on when the gates opened and how many steps were left.,Female,White,456398
+918,48,Non-Hispanic,,Female,White,484701
+927,41,Non-Hispanic,counting,Female,White,2022118
+915,54,Non-Hispanic,Number of time stamps/boxes left and deciding if they player could have made it through on the other side in time.,Female,White,567422
+922,33,Non-Hispanic,I generally disagreed any time there was a door as the door opening is random so I can't have any certainty about whether a different path would've changed the outcome.,Male,White,395937
+934,24,Non-Hispanic,I just watched the doors on both paths and made my decision based on that.,Male,White,686918
+901,38,Non-Hispanic,I just counted the remaining steps after the other door opened to see if they had enough steps left to reach the star.,Female,White,493823
+930,32,Hispanic,Seeing the course of action step by step was helpful in seeing which path led to the win.,Female,White,542236
+942,19,Non-Hispanic,I mathematically counted the steps and looked to when the door opened in comparison to the other path.,Non-binary,White,469226
+917,45,Non-Hispanic,I just used logic and counted the spaces if and when the doors opened. ,Male,White,770496
+911,22,Non-Hispanic,I just counted ,Male,Multiracial,826388
+910,22,Non-Hispanic,"I imagined if they did pick the other route, how many spaces could they move in the time limit, and if they would've won in time or not.",Female,White,600434
+916,23,Non-Hispanic,,Male,Black/African American,334292
+891,25,Non-Hispanic,factors-how soon the door opened. no questions.,Female,White,346101
+925,59,Non-Hispanic,Just counting to see if the other way would have won,Male,White,475290
+903,20,Non-Hispanic,"First, a comment: I at first thought that the door would only open if the player was in front of it, but at a rather time. Because of this some of my early responses are dead wrong. I was guessing that in the opposite path, the door might have opened (but in the video it remained closed). But once I figured out how it worked I just watched to see if the player would be able to get through the doors and have enough steps left to win.",Female,White,506393
