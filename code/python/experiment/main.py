@@ -25,12 +25,12 @@ def parse_arguments():
     parser.add_argument('--verbose', action='store_true', default=False, help='verbosely print info while simulating or not')
     parser.add_argument('--save-trial-data', action='store_true', default=False, help='save trial data while generating trials')
     
-    parser.add_argument('--n-simulations', type=int, default=1000, help='number of simulations to run counterfactual/hypothetical models')
-    
-    # Gridworld parameters
+    parser.add_argument('--n-simulations', type=int, default=1000, help='number of simulations to run models')
     parser.add_argument('--prob-stall', type=float, default=0.12, help='probabilty of agent stalling on any time step')
     parser.add_argument('--prob-door', type=float, default=0.19, help='probability of door switching on any time step')
     parser.add_argument('--time-limit', type=int, default=10, help='time limit for agent')
+
+    parser.add_argument('--make-image', action='store_true', default=False, help='just make image of grid')
 
     return parser.parse_args()
 

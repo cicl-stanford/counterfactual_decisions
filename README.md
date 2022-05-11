@@ -51,15 +51,21 @@ explained by counterfactual rather than hypothetical simulations.
 ```
 
 - `code/`
-    - `R/` contains all the code for analyzing data and generating figures (see a rendered file [here](https://cicl-stanford.github.io/counterfactual_decisions/)).
+    - `R/` contains all the code for analyzing data and generating figures
+      (see a rendered file [here](https://cicl-stanford.github.io/counterfactual_decisions/)).
     - `experiments/` contains model predictions and info about the experiment trials.
-    - `python/` contains all the code for our environment and simulation models (see usage details below).
-- `data/` contains anonymized data from both experiments. For each experiment, `participants.csv` contains demographic information and post-experiment feedback/comments from participants, and `trials.csv` contains the actual judgment data.
+    - `python/` contains all the code for our environment and simulation
+      models (see usage details below).
+- `data/` contains anonymized data from both experiments. For each experiment,
+  `participants.csv` contains demographic information and post-experiment
+  feedback/comments from participants, and `trials.csv` contains the actual
+  judgment data.
 - `docs/` contains all the experiment code. You can preview the experiments below:
-    - [Experiment 1 counterfactual](https://cicl-stanford.github.io/counterfactual_decisions/experiment1_cf/)
-    - [Experiment 1 hypothetical](https://cicl-stanford.github.io/counterfactual_decisions/experiment1_hyp/)
+    - [Experiment 1 - counterfactual](https://cicl-stanford.github.io/counterfactual_decisions/experiment1_cf/)
+    - [Experiment 1 - hypothetical](https://cicl-stanford.github.io/counterfactual_decisions/experiment1_hyp/)
     - [Experiment 2](https://cicl-stanford.github.io/counterfactual_decisions/experiment2/)
-- `figures/` contains the two figures from the paper (generated using the script in `code/R/`) as well as gifs and still images of all the experiment trials.
+- `figures/` contains the two figures from the paper (generated using the script
+  in `code/R/`) as well as gifs and still images of all the experiment trials.
 
 
 ## Usage
@@ -84,31 +90,39 @@ python main.py --generate-trials --cf
 ```
 
 Other flags that can be added:
-- `--visualize` will generate step-by-step images and a gif of the specified trial (or all trials), which will be saved in `trials/` under the corresponding trial number. However, don't visualize and run any models in the same command or pygame will break.
-- `--verbose` (while running a model) will print out step-by-step information about each simulation as it's running, which can be useful for debugging.
-- `--save-trial-data` will record the outcomes and simulation results in `code/experiment/experiment.csv`. Note that this will override the current file.
+- `--visualize` will generate step-by-step images and a gif of the specified trial (or
+  all trials), which will be saved in `trials/` under the corresponding trial number.
+  However, don't visualize and run any models in the same command or pygame will break.
+- `--verbose` (while running a model) will print out step-by-step information
+  about each simulation as it's running, which can be useful for debugging.
+- `--save-trial-data` will record the outcomes and simulation results in
+  `code/experiment/experiment.csv`. Note that this will override the current file.
 - `--n-simulations <n>` specifies the number of simulations to run, default 1000.
-- `--prob-stall <p>` specifies the probability that the agent stalls on any time step, default 0.12 (fitted to data).
-- `--prob-door <p>` specifies the probability of a door switching on any time step, default 0.19 (fitted to data).
+- `--prob-stall <p>` specifies the probability that the agent stalls on any
+  time step, default 0.12 (fitted to data).
+- `--prob-door <p>` specifies the probability of a door switching on any time
+  step, default 0.19 (fitted to data).
 - `--time-limit <t>` specifies the maximum number of time steps in each trial, default 10.
 
 
 ### Modifying or creating new trials
 
-The command `--make-image` can be used to generate and save an image of the gridworld for a specific trial, in the `grid_images/` directory:
+The command `--make-image` can be used to generate and save an image of the gridworld
+for a specific trial, in the `grid_images/` directory:
 
 ```
 python main.py --make-image --trial <trial>
 ```
 
-This can be helpful especially if you want to modify any of the current grids or create a new one and see what it looks like.
+This can be helpful especially if you want to modify any of the current grids
+or create a new one and see what it looks like.
 All the gridworlds are located in `grids/` as text files. Each file has two parts separated by an empty line:
 
 1. The initial states of each door as `0` (closed) or `1` (open) with each door on its own line.
 2. The grid, which gets parsed into gridworld objects:
     - `r` and `b` --> red and blue start squares
     - `g` --> goal square
-    - `<space>` --> floor square
+    - <code>&nbsp;</code> --> floor square
     - `.` --> placeholder divider between two floor squares
     - `|` --> vertical door between two floor squares
     - `X` --> inaccessible square

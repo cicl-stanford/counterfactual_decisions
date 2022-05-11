@@ -292,7 +292,7 @@ data_modeling = data %>%
 
 ## Fitting all trials
 
-```{r fit_heuristic}
+```{r fit_heuristic, message = T}
 fit.heuristic = lmer(
   formula = cause ~ 1 + outcome:doors_final + (1 | id),
   data = data_modeling
@@ -389,14 +389,15 @@ plot_simulation = function(data, name) {
     theme(legend.position = "none",
           text = element_text(size = 12),
           axis.text = element_text(size = 12)) +
-    annotate('text', color = 'red3',
-             label = sprintf('r = %s\nRMSE = %.2f', r, rmse),
+    annotate('text',
+             label = sprintf('RMSE = %.2f\nr = %s', rmse, r),
              hjust = 0,   # left align
-             x = limits[1], y = limits[2] - 25) +
+             x = limits[1], y = limits[2]) +
     scale_x_continuous(name = paste(name, 'simulation'),
                        limits = limits) +
     scale_y_continuous(name = paste(name, 'judgment'),
-                       limits = limits) +
+                       limits = limits,
+                       expand = expansion(0.1)) +
     scale_color_manual(values = color_scale,
                       guide = 'none') +
     scale_fill_manual(values = color_scale,
@@ -511,12 +512,12 @@ plot_cause_vs = function(model_name) {
           text = element_text(size = 12),
           axis.text = element_text(size = 12)) +
     annotate('text',
-             label = sprintf('r = %s\nRMSE = %.2f', r, rmse),
+             label = sprintf('RMSE = %.2f\nr = %s', rmse, r),
              hjust = 0,
-             x = limits[1], y = limits[2] - 2) +
+             x = limits[1], y = limits[2] - 3) +
     scale_x_continuous(name = case_when(
-      model_name == 'cf' ~ 'counterfactual contrast judgment',
-      model_name == 'hyp' ~ 'hypothetical contrast judgment',
+      model_name == 'cf' ~ 'counterfactual simulation model',
+      model_name == 'hyp' ~ 'hypothetical simulation model',
       model_name == 'heuristic' ~ 'heuristic model'
     ),
                        limits = limits) +
