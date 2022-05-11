@@ -294,7 +294,7 @@ data_modeling = data %>%
 
 ```{r fit_heuristic, message = T}
 fit.heuristic = lmer(
-  formula = cause ~ 1 + outcome:doors_final + (1 | id),
+  formula = cause ~ 1 + outcome*doors_final + (1 | id),
   data = data_modeling
 )
 

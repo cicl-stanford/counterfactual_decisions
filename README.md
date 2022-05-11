@@ -4,8 +4,8 @@ This repository contains the models, experiments, data, analyses, and figures
 for the paper "That was close! A counterfactual simulation model of causal
 judgments about decisions" by Sarah A. Wu, Shruti Sridhar, and Tobias Gerstenberg.
 
-To be presented as a poster and published in the proceedings of the 44th
-Annual Conference of the Cognitive Science Society (CogSci).
+To be presented at the 44th Annual Conference of the Cognitive Science Society
+(CogSci 2022), and published in the Conference Proceedings.
 
 __Contents__:
 - [Introduction](#introduction)
@@ -81,7 +81,7 @@ python main.py --generate-trials --trial <trial> --cf --hyp
 ```
 
 where `<trial>` is the trial number from `1` to `18`. This flag can be left off to run all 18 trials.
-`--cf` and `--hyp` indicates running the counterfactual and hypothetical simulation models, respectively.
+`--cf` and `--hyp` indicate running the counterfactual and hypothetical simulation models, respectively.
 Both, neither, or just one of these flags can be included.
 For example, the command to run only the counterfactual model on all 18 trials is:
 
@@ -155,6 +155,11 @@ b. . . . | .
 Door state changes are defined in `code/experiment/experiment.json`. Each JSON string contains:
 - `"num"`: the trial number (`1` to `18`)
 - `"path"`: the path chosen (`"red"` or `"blue"`)
-- `"door_changes"`: list of door state changes expressed as another JSON string with time steps as properties and a list of locations of doors that will switch states on that time step as values. Doors are marked by the square immediately to their left. For example, `{"1": [[3, 0], [3, 2]]}` means that on the first time step, the doors located to the right of squares `(3, 0)` and `(3, 2)` will switch states.
+- `"door_changes"`: list of door state changes expressed as another JSON string
+  with time steps as properties and a list of locations of doors that will
+  switch states on that time step as values. Doors are marked by the square
+  immediately to their left with the origin at the top left. For example,
+  the two doors in the grid above are located at (5, 0) and (5, 2) and
+  `{"2": [[5, 0], [5, 2]]}` means that both would open on the second time step.
 
 Feel to make your own grids and trials, and test the simulation models on them!
