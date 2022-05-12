@@ -55,7 +55,10 @@ trial_info = read_csv(paste0(trial_info_dir, 'experiment.csv'),
          pred_hyp = ifelse(outcome == 'won', 100 - hyp_success_rate, hyp_success_rate),
          diff_made = c(F, F, T, T, T, T,
                        F, T, T, F, T, F,
-                       T, T, F, F, F, F))
+                       T, T, F, F, F, F),
+         trial_label = c(1, NA, 2, NA, 3, NA,
+                         NA, 4, NA, 5, NA, 6,
+                         7, NA, 8, NA, 9, NA))
 ```
 
 ## Counterfactual condition
@@ -342,7 +345,8 @@ data_cf_pred = data_cf_means %>%
           select(trial,
                  pred = cf_success_rate,
                  pred_recode = pred_cf,
-                 diff_made),
+                 diff_made,
+                 trial_label),
         by = 'trial')
 
 data_hyp_pred = data_hyp_means %>%
@@ -353,7 +357,8 @@ data_hyp_pred = data_hyp_means %>%
           select(trial,
                  pred = hyp_success_rate,
                  pred_recode = pred_hyp,
-                 diff_made),
+                 diff_made,
+                 trial_label),
         by = 'trial')
 ```
 
@@ -382,7 +387,9 @@ plot_simulation = function(data, name) {
     geom_point(mapping = aes(fill = 'darkgray'),
                shape = 21, size = 3, stroke = 0.2) +
     # trial labels
-    geom_text_repel(aes(label = trial),
+    geom_text_repel(data = data %>%
+                      filter(!is.na(trial_label)),
+                    mapping = aes(label = trial_label),
                     size = 4,
                     seed = 1,
                     max.overlaps = 18) +
@@ -466,7 +473,7 @@ data_pred = data %>%
          pred_heuristic_low = pred_heuristic_mean,
          pred_heuristic_high = pred_heuristic_mean) %>%
   merge(trial_info %>%
-          select(trial, diff_made),
+          select(trial, diff_made, trial_label),
         by = c('trial'))
 ```
 
@@ -503,8 +510,10 @@ plot_cause_vs = function(model_name) {
     geom_point(mapping = aes(fill = diff_made),
                shape = 21, size = 3, stroke = 0.2) +
     # trial labels
-    geom_text_repel(aes(label = trial,
-                        color = diff_made),
+    geom_text_repel(data = data_pred %>%
+                      filter(!is.na(trial_label)),
+                    mapping = aes(label = trial_label,
+                                  color = diff_made),
                     size = 4,
                     seed = 1,
                     max.overlaps = 18) +
