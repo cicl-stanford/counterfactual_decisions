@@ -4,8 +4,18 @@ This repository contains the models, experiments, data, analyses, and figures
 for the paper "That was close! A counterfactual simulation model of causal
 judgments about decisions" by Sarah A. Wu, Shruti Sridhar, and Tobias Gerstenberg.
 
-To be presented at the 44th Annual Conference of the Cognitive Science Society
+Presented at the 44th Annual Conference of the Cognitive Science Society
 (CogSci 2022), and published in the Conference Proceedings.
+
+```
+@inproceedings{wu2022that,
+  title = {That was close! {A} counterfactual simulation model of causal judgments about decisions},
+  booktitle = {Proceedings of the 44th {Annual} {Conference} of the {Cognitive} {Science} {Society}},
+  author = {Wu, Sarah A. and Sridhar, Shruti and Gerstenberg, Tobias},
+  year = {2022},
+  pages = {3703--3710},
+}
+```
 
 __Contents__:
 - [Introduction](#introduction)
